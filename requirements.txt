@@ -1,0 +1,6 @@
+geopandas==1.1.2
+rasterio==1.5.0
+pygridmet
+xarray
+rasterstats
+rioxarray

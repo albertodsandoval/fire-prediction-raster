@@ -3,13 +3,15 @@ import numpy as np
 from shapely.geometry import box
 import rasterio
 from rasterio.features import rasterize
+from pygridmet.pygridmet import get_bygeom
 
+
+#------------ DEFINING THE REGION --------------
+park = gpd.read_file("assests\\nps_boundary.shp")
+park = park.to_crs("EPSG:3310")
+geom = park.geometry.union_all()
 
 #--------------- CREATING GRID -----------------
-# park boundary (already projected, e.g. EPSG:3310)
-park = gpd.read_file("nps_boundary.shp")
-park = park.to_crs("EPSG:3310")
-
 # bounding box
 minx, miny, maxx, maxy = park.total_bounds
 
@@ -32,3 +34,13 @@ grid["cx"] = grid.centroid.x
 grid["cy"] = grid.centroid.y
 
 
+#---------- EXTRACTING GRIDMET DATA ------------
+help(get_bygeom)
+ds = get_bygeom(
+    geometry=geom,
+    dates=("2020-07-01", "2020-07-10"),
+    crs=park.crs,
+    variables=["tmmx"],
+    conn_timeout=3000,          # seconds
+    validate_filesize=False     # reduces retries if server returns partial
+)
