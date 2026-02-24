@@ -12,25 +12,25 @@ The ultimate goal is:
 
 ### Data
 As for the data I will be using, I plan on leveraging:
-*gridMET (Weather Data)
-*FIRMS (Fire Points)
-*LANDFIRE (Fuels)
+* gridMET (Weather Data)
+* FIRMS (Fire Points)
+* LANDFIRE (Fuels)
 
 From these, the Fire Points would be my labels and I would extract predictive features from gridMET and LANDFIRE, notably:
-*Daily Max Temp (tmmx)
-*Daily Min Temp (tmmn)
-*Precipitation 
-*Relative Humidity (Max)
-*Relative Humidity (Min)
-*Wind Speed
-*Vapor Pressure Deficit
-*Fuel Model
-*Canopy Cover
-*Canopy Height
-*Canopy Base Height
-*Canopy Bulk Density
-*Vegetation
-*FIRMS (1 if fire was detected, label)
+* Daily Max Temp (tmmx)
+* Daily Min Temp (tmmn)
+* Precipitation 
+* Relative Humidity (Max)
+* Relative Humidity (Min)
+* Wind Speed
+* Vapor Pressure Deficit
+* Fuel Model
+* Canopy Cover
+* Canopy Height
+* Canopy Base Height
+* Canopy Bulk Density
+* Vegetation
+* FIRMS (1 if fire was detected, label)
 **Note:** These features are subject to change.
 
 ## The Process
