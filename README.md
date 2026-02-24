@@ -30,8 +30,9 @@ From these, the Fire Points would be my labels and I would extract predictive fe
 * Canopy Base Height
 * Canopy Bulk Density
 * Vegetation
-* FIRMS (1 if fire was detected, label)\n
-**Note:** These features are subject to change.
+* FIRMS (1 if fire was detected, label)
+
+*Note:* These features are subject to change.
 
 ## The Process
 ### Step 1) Defining the Region
