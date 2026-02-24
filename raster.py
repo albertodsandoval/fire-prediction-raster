@@ -4,8 +4,10 @@ from shapely.geometry import box
 import rasterio
 from rasterio.features import rasterize
 
+
+#--------------- CREATING GRID -----------------
 # park boundary (already projected, e.g. EPSG:3310)
-park = gpd.read_file("D:/Development/Datasets/Sequoia/nps_boundary/nps_boundary.shp")
+park = gpd.read_file("nps_boundary.shp")
 park = park.to_crs("EPSG:3310")
 
 # bounding box
@@ -28,3 +30,5 @@ grid = grid[grid.intersects(park.union_all())].copy()
 grid["cell_id"] = range(len(grid))
 grid["cx"] = grid.centroid.x
 grid["cy"] = grid.centroid.y
+
+
