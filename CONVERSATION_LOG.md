@@ -59,3 +59,18 @@ Logging rules:
 - A California run failed because `CA_State.shp` was present but its `.shx` index file was missing or unreadable, causing `pyogrio` to refuse the dataset.
 - Decision: route shared shapefile reads through a helper that sets `SHAPE_RESTORE_SHX=YES` so GDAL can rebuild the missing index when possible.
 - Result: `pipeline/grid.py` now uses `_read_shapefile(...)` for both state and park boundaries, which should make region loading more resilient to incomplete shapefile sidecars.
+
+### Added a preprocessing script to create California-only GridMET NetCDFs
+- The user wanted to clip the downloaded GridMET yearly NetCDF files to California once so later statewide runs would avoid repeatedly loading full-CONUS inputs.
+- Decision: add a standalone script that subsets yearly GridMET NetCDFs by California bounds, optionally clips them to the California polygon, and writes reusable `*_california.nc` outputs.
+- Result: added `scripts/clip_gridmet_to_california.py`, which can produce files such as `tmmx_2020_california.nc`, `tmmn_2020_california.nc`, `pr_2020_california.nc`, and `vs_2020_california.nc`.
+
+### Made the GridMET preprocessing script runnable as a direct script
+- Running `python scripts\\clip_gridmet_to_california.py` failed because the `pipeline` package was not on `sys.path` when executed as a standalone script.
+- Decision: have the script prepend the repo root to `sys.path` before importing from `pipeline`.
+- Result: `scripts\\clip_gridmet_to_california.py` should now run directly from the repository root without requiring `python -m` invocation.
+
+### Fixed CRS propagation in the California NetCDF clipping script
+- The preprocessing script failed at `rio.clip(...)` because the selected DataArray no longer carried CRS metadata after subsetting.
+- Decision: explicitly restore the spatial dims and write `EPSG:4326` onto the subset before clipping it to the California polygon.
+- Result: `scripts\\clip_gridmet_to_california.py` now calls `rio.set_spatial_dims(...).rio.write_crs(4326)` on the subset prior to the shape clip.

@@ -74,6 +74,8 @@ def main() -> None:
         output_path=EXPORT_OUTPUT_PATH,
     )
 
+    dataset.to_csv('output.csv', index=False)   
+
     print(dataset.head())
     print(f"Exported grid mask to {grid_mask_path}.")
     print(f"Exported grid cells to {grid_vector_path}.")
