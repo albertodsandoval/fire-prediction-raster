@@ -77,7 +77,8 @@ def _load_gridmet_features_pygridmet(
                 height,
                 resampling_by_variable.get(variable, Resampling.bilinear),
             )
-        rows.append(_build_day_frame(date, data_by_variable, mask, cell_lookup))
+        rows.append(_build_day_frame(
+            date, data_by_variable, mask, cell_lookup))
 
     return pd.concat(rows, ignore_index=True)
 
@@ -158,7 +159,8 @@ def _load_gridmet_features_local_netcdf(
     for variable in variables:
         yearly_arrays = []
         for year in years:
-            yearly_arrays.append(_open_local_gridmet_variable(variable, year, netcdf_path))
+            yearly_arrays.append(_open_local_gridmet_variable(
+                variable, year, netcdf_path))
 
         da = xr.concat(yearly_arrays, dim="time").sortby("time")
         da = da.sel(time=slice(start_date, end_date))
@@ -185,7 +187,8 @@ def _load_gridmet_features_local_netcdf(
 
     rows = []
     for date in sorted(variables_by_date):
-        rows.append(_build_day_frame(date, variables_by_date[date], mask, cell_lookup))
+        rows.append(_build_day_frame(
+            date, variables_by_date[date], mask, cell_lookup))
 
     return pd.concat(rows, ignore_index=True)
 
@@ -230,4 +233,5 @@ def load_gridmet_features(
             resampling_by_variable=resampling_by_variable,
         )
 
-    raise ValueError("source_mode must be either 'pygridmet' or 'local_netcdf'.")
+    raise ValueError(
+        "source_mode must be either 'pygridmet' or 'local_netcdf'.")

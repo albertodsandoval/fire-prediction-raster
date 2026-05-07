@@ -27,7 +27,8 @@ def export_day_variable_to_geotiff(
         raise KeyError(f"Variable '{variable}' was not found in the dataset.")
 
     raster = np.full((height, width), nodata, dtype=np.float32)
-    raster[day_df["row"].to_numpy(), day_df["col"].to_numpy()] = day_df[variable].to_numpy(dtype=np.float32)
+    raster[day_df["row"].to_numpy(), day_df["col"].to_numpy()
+           ] = day_df[variable].to_numpy(dtype=np.float32)
 
     output = Path(output_path)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -96,7 +97,8 @@ def export_grid_cells_to_gpkg(
         for row, col in zip(cell_lookup["row"], cell_lookup["col"])
     ]
 
-    grid_gdf = gpd.GeoDataFrame(cell_lookup.copy(), geometry=geometries, crs=TARGET_CRS)
+    grid_gdf = gpd.GeoDataFrame(
+        cell_lookup.copy(), geometry=geometries, crs=TARGET_CRS)
     output = Path(output_path)
     output.parent.mkdir(parents=True, exist_ok=True)
     grid_gdf.to_file(output, layer=layer_name, driver="GPKG")

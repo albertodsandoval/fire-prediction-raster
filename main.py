@@ -14,7 +14,7 @@ from pipeline.landfire_source import load_landfire_features
 CELL_SIZE = 500  # meters
 REGION_MODE = "california"
 DATES = ("2020-07-01", "2020-07-10")
-VARIABLES = ["tmmx", "tmmn", "pr", "vs"]
+VARIABLES = ["tmmx", "tmmn", "pr", "vs", "rmax"]
 GRIDMET_SOURCE_MODE = "local_netcdf" if REGION_MODE == "california" else "pygridmet"
 GRIDMET_NETCDF_DIR = "D:\\Development\\Datasets\\Sequoia\\gridMET netCDF"
 EXPORT_VARIABLE = "tmmx"
@@ -27,6 +27,7 @@ RESAMPLING_BY_VARIABLE = {
     "tmmn": Resampling.bilinear,
     "pr": Resampling.bilinear,
     "vs": Resampling.bilinear,
+    "rmax": Resampling.bilinear,
 }
 
 

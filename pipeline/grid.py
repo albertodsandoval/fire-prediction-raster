@@ -24,15 +24,18 @@ def load_region(region_mode: str) -> gpd.GeoDataFrame:
                 region = states.loc[states[column] == value].copy()
                 if not region.empty:
                     return region.to_crs(TARGET_CRS)
-        raise ValueError("Could not find a California feature in assests\\CA_State.shp.")
+        raise ValueError(
+            "Could not find a California feature in assests\\CA_State.shp.")
 
     if region_mode == "sequoia":
         parks = _read_shapefile("assests\\nps_boundary.shp")
         if "UNIT_CODE" not in parks.columns:
-            raise ValueError("Expected UNIT_CODE in assests\\nps_boundary.shp.")
+            raise ValueError(
+                "Expected UNIT_CODE in assests\\nps_boundary.shp.")
         region = parks.loc[parks["UNIT_CODE"] == "SEQU"].copy()
         if region.empty:
-            raise ValueError("Could not find UNIT_CODE='SEQU' in assests\\nps_boundary.shp.")
+            raise ValueError(
+                "Could not find UNIT_CODE='SEQU' in assests\\nps_boundary.shp.")
         return region.to_crs(TARGET_CRS)
 
     raise ValueError("REGION_MODE must be either 'california' or 'sequoia'.")
