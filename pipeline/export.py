@@ -4,9 +4,18 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import rasterio
+from rasterio.windows import Window, bounds as window_bounds
 from shapely.geometry import box
 
 from pipeline.grid import TARGET_CRS
+
+
+def cell_polygon_from_row_col(transform, row: int, col: int):
+    left, bottom, right, top = window_bounds(
+        Window(col_off=col, row_off=row, width=1, height=1),
+        transform,
+    )
+    return box(left, bottom, right, top)
 
 
 def export_day_variable_to_geotiff(
@@ -20,18 +29,38 @@ def export_day_variable_to_geotiff(
     nodata: float = np.nan,
 ) -> Path:
     export_date = pd.to_datetime(date).date()
-    day_df = dataset.loc[dataset["date"] == export_date].copy()
+    dataset_dates = pd.to_datetime(dataset["date"]).dt.date
+    day_df = dataset.loc[dataset_dates == export_date].copy()
     if day_df.empty:
         raise ValueError(f"No rows found for date {export_date}.")
     if variable not in day_df.columns:
         raise KeyError(f"Variable '{variable}' was not found in the dataset.")
 
     raster = np.full((height, width), nodata, dtype=np.float32)
-    raster[day_df["row"].to_numpy(), day_df["col"].to_numpy()
-           ] = day_df[variable].to_numpy(dtype=np.float32)
+    rows = day_df["row"].to_numpy(dtype=int)
+    cols = day_df["col"].to_numpy(dtype=int)
+    if (
+        (rows < 0).any()
+        or (rows >= height).any()
+        or (cols < 0).any()
+        or (cols >= width).any()
+    ):
+        raise ValueError("Dataset contains row/col values outside the raster grid.")
+
+    raster[rows, cols] = day_df[variable].to_numpy(dtype=np.float32)
 
     output = Path(output_path)
     output.parent.mkdir(parents=True, exist_ok=True)
+    print(
+        "RASTER EXPORT DEBUG:",
+        {
+            "variable": variable,
+            "date": str(export_date),
+            "transform": transform,
+            "width": width,
+            "height": height,
+        },
+    )
 
     with rasterio.open(
         output,
@@ -84,19 +113,26 @@ def export_grid_cells_to_gpkg(
     output_path: str,
     layer_name: str = "grid_cells",
 ) -> Path:
-    x_origin = transform.c
-    y_origin = transform.f
-
     geometries = [
-        box(
-            x_origin + (col * cell_size),
-            y_origin - ((row + 1) * cell_size),
-            x_origin + ((col + 1) * cell_size),
-            y_origin - (row * cell_size),
-        )
+        cell_polygon_from_row_col(transform, row, col)
         for row, col in zip(cell_lookup["row"], cell_lookup["col"])
     ]
 
+    print(
+        "GRID VECTOR EXPORT DEBUG:",
+        {
+            "transform": transform,
+            "cell_size": cell_size,
+            "row_range": (
+                int(cell_lookup["row"].min()),
+                int(cell_lookup["row"].max()),
+            ),
+            "col_range": (
+                int(cell_lookup["col"].min()),
+                int(cell_lookup["col"].max()),
+            ),
+        },
+    )
     grid_gdf = gpd.GeoDataFrame(
         cell_lookup.copy(), geometry=geometries, crs=TARGET_CRS)
     output = Path(output_path)

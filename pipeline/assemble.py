@@ -10,5 +10,5 @@ def assemble_dataset(
     dataset = cell_lookup.merge(weather_df, on="cell_id", how="inner")
     dataset = dataset.merge(static_df, on="cell_id", how="left")
     dataset = dataset.merge(labels_df, on=["cell_id", "date"], how="left")
-    dataset["fire_label"] = dataset["fire_label"].fillna(0).astype(int)
+    dataset["fire_label_t1"] = dataset["fire_label_t1"].fillna(0).astype(int)
     return dataset
